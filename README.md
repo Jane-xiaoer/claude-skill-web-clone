@@ -11,12 +11,15 @@
 
 You see a website you love. You want to clone it — to learn how it works, to remix it into your own thing, or to run it offline. AI tools love to produce *plausible-looking* "clone analysis" documents full of code blocks that are entirely fabricated and break the moment you run them.
 
-This skill is a **methodology that puts real source first**, with a 6-step decision tree covering:
+This skill is a **methodology plus executable probes that put real source first**, with a 6-step decision tree covering:
 
 - Static HTML/CSS sites → `wget --mirror`
 - React / Vue / Next content sites → rebuild on a template
-- **WebGL / Canvas / Three.js heavy frontends** → reverse-engineer real source, line by line
+- Multi-page sites → crawl internal routes before designing templates
+- Interactive sites → record hover / click / scroll / canvas-drag states before cloning
+- **WebGL / Canvas / Three.js heavy frontends** → reverse-engineer real source, line by line; when there's no findable source, runtime frame-capture + a **baseline-first replay gate** with `SOURCE / PARTIAL / GUESS` evidence grading
 - Verify in a real browser, document the truth, replace content with yours
+- **Visual / rebrand modes** → distill a versionable `design-dna.json` (design tokens + style + effects), then "keep the DNA, swap the content"
 
 ## Iron rule: real source first, never copy AI-guessed code
 
@@ -36,8 +39,18 @@ claude-skill-web-clone/
 ├── follow-wechat-qrcode.jpg
 └── references/
     ├── reverse-engineering.md     ← How to dissect a WebGL/Canvas frontend, line by line
+    ├── effect-extraction.md       ← Evidence grading + baseline-first gate for extracting effects
+    ├── design-dna.md              ← Structured design-identity layer (visual / rebrand modes)
     ├── marbles-case.md            ← Flagship case: real architecture vs AI hallucination
     └── deliverables.md            ← NOTES.md / TEARDOWN.md / RECON/ templates
+└── scripts/
+    ├── recon-site.mjs             ← Browser screenshots + DOM/framework/resource signals
+    ├── route-crawl.mjs            ← Same-site route map + screenshot per route
+    ├── interaction-probe.mjs      ← Scroll/hover/click/canvas-drag state evidence
+    ├── network-capture.mjs        ← XHR/fetch capture for SPA fixtures
+    ├── asset-harvest.mjs          ← Download discovered source assets
+    ├── dna-scaffold.mjs           ← Build a design-dna.json skeleton, prefilled from recon
+    └── visual-diff.mjs            ← Pixel comparison for original vs clone screenshots
 ```
 
 ## Install
@@ -61,7 +74,7 @@ Claude / Codex will load `SKILL.md` and walk the decision tree.
 | Step | What to do |
 |---|---|
 | **1** | `gh api search/repositories?q=<name>` — find the real source on GitHub FIRST |
-| **2** | If no source: browser-probe the site (framework? `window.THREE`? canvas count? scroll library?) |
+| **2** | If no source: browser-probe the site, crawl routes, capture network, and probe interactions |
 | **3** | Pick the path: `wget` mirror / template rebuild / **WebGL reverse-engineering** / theme market |
 | **4** | Set up `~/projects/website-clones/<name>-clone/` (or your equivalent), keep `index-original.html` read-only |
 | **5** | Strip tracking, write `NOTES.md` + `TEARDOWN.md`, verify in a real browser with screenshots |
@@ -94,7 +107,8 @@ Before deploying anything publicly, **check the source repo's license**:
 这个 skill 把"真源码至上"做成可重复的流程,**6 步决策树**覆盖三大分支:
 - 静态 HTML/CSS 站 → `wget --mirror`
 - React / Vue / Next 内容站 → 重建模板灌内容
-- **WebGL / Canvas / Three.js 重前端** → 逆向真源码,逐行核对
+- **WebGL / Canvas / Three.js 重前端** → 逆向真源码,逐行核对;找不到源码时用运行时帧捕获 + **baseline-first 复现闸门** + `SOURCE/PARTIAL/GUESS` 证据分级
+- **视觉复刻 / 内容爆改模式** → 把"那个站的感觉"蒸馏成可版本化的 `design-dna.json`(设计 token + 风格 + 特效),然后"DNA 留着、内容换掉"
 - 浏览器真验证,如实记录,最后替换成你自己的内容
 
 ### 头号铁律:真源码至上,绝不抄 AI 臆造代码
@@ -128,6 +142,8 @@ AI 会自动加载 `SKILL.md` 走决策树。
 
 - **方法论沉淀来源 / Origin**:Jane 的克隆中枢 `~/projects/website-clones/` 工作流(2026-05-27 marbles 案例跑通后抽出 skill)
 - **旗舰范例原作 / Flagship case author**:[chiuhans111/marbles](https://github.com/chiuhans111/marbles) by Hans Chiu — 没有这份单文件 1067 行的玻璃弹珠源码就没有这个 skill 的"真源码至上"铁律
+- **设计身份层 schema / Design-DNA schema**:`references/design-dna.md` 的三维 DNA JSON 改编自 [zanwei/design-dna](https://github.com/zanwei/design-dna)（MIT），用于"视觉复刻 / 内容爆改"模式
+- **特效提取纪律 / Effect-extraction discipline**:`references/effect-extraction.md` 的证据分级 + baseline-first 闸门受 [lixiaolin94/skills · web-shader-extractor](https://github.com/lixiaolin94/skills) 启发（该仓库无 LICENSE，本 skill 只借方法概念、用自己的话重写，未复制其代码或原文）
 - **迭代打磨 / Iteration**:Jane(`@xiaoerzhan`) + Claude Code(多轮 reverse-engineering)
 
 ---

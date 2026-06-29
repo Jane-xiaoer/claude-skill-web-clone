@@ -2,6 +2,8 @@
 
 当侦察判定一个站是 WebGL/Canvas/Three.js 重前端（`window.THREE` 存在、或有多个 `<canvas>`、或有 `<script type="x-shader/*">`），走这套。
 
+> 本篇讲**怎么读懂渲染架构**；逆向时的**证据纪律**（SOURCE/PARTIAL/GUESS 分级、no-compensation、baseline-first 闸门）和**找不到源码时的运行时捕获兜底** → `effect-extraction.md`。两篇配合用。
+
 ## 通用拆解步骤
 
 1. **先拿单文件源码**。很多 demo 站全自包含在一个 HTML 里（GitHub raw / 浏览器查看源代码），别急着上 Playwright 抓站。

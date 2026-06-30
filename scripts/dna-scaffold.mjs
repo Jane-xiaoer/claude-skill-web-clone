@@ -90,6 +90,21 @@ function skeleton(name) {
 
 const COLOR_RE = /(#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)|\bhsla?\([^)]*\))/;
 
+// recon-site.mjs 把信号按视口嵌在 captures[].signals 下；取最宽视口的 signals 摊平，
+// 兼容已是扁平结构的 recon 输入。摊平失败则原样返回(enrich 对缺字段已容错)。
+function flattenRecon(recon) {
+  if (recon && Array.isArray(recon.captures) && recon.captures.length) {
+    const widest = recon.captures
+      .filter((c) => c && c.signals)
+      .sort((a, b) => (b?.viewport?.width || 0) - (a?.viewport?.width || 0))[0];
+    if (widest && widest.signals) {
+      // 顶层 url 兜底进 href，便于 meta.source_references 预填
+      return { href: recon.url, ...widest.signals };
+    }
+  }
+  return recon;
+}
+
 function uniq(arr) {
   return Array.from(new Set(arr.filter(Boolean)));
 }
@@ -179,7 +194,7 @@ try {
   if (args.recon) {
     try {
       const recon = JSON.parse(fs.readFileSync(path.resolve(args.recon), "utf8"));
-      dna = enrich(dna, recon);
+      dna = enrich(dna, flattenRecon(recon));
     } catch (e) {
       console.warn(`⚠️ 读 recon 失败(${e.message})，只输出空骨架。`);
     }

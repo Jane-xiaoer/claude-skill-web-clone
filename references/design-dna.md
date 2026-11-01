@@ -43,8 +43,10 @@ DNA JSON 分三层，对应"可量化 / 可感知 / 特殊渲染"：
 
 ## 脚手架
 
+先按 [SKILL.md 的脚本路径设置](../SKILL.md#脚本路径设置) 设置 `WEB_CLONE_SKILL_DIR`。
+
 ```bash
-node /Users/jane/.shared-skills/web-clone/scripts/dna-scaffold.mjs \
+node "$WEB_CLONE_SKILL_DIR/scripts/dna-scaffold.mjs" \
   --recon ~/projects/website-clones/<站名>-clone/RECON/original-recon.json \
   --out   ~/projects/website-clones/<站名>-clone/RECON/design-dna.json
 ```

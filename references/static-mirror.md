@@ -15,8 +15,10 @@
 - 唯一可靠：**真浏览器加载 + 从头滚到尾**，把每一个**真实发生的网络请求**记下来，再按这份"实际请求清单"镜像。
 
 ## 一键脚本
+先按 [SKILL.md 的脚本路径设置](../SKILL.md#脚本路径设置) 设置 `WEB_CLONE_SKILL_DIR`。
+
 ```bash
-node /Users/jane/.shared-skills/web-clone/scripts/mirror-site.mjs \
+node "$WEB_CLONE_SKILL_DIR/scripts/mirror-site.mjs" \
   --url https://<站>/ \
   --out ~/projects/website-clones/<站名>-clone
 ```

@@ -1,22 +1,18 @@
 import { createRequire } from "node:module";
+import path from "node:path";
 
 const require = createRequire(import.meta.url);
 
 export function loadPlaywright() {
-  const candidates = [
-    "playwright",
-    "/Users/jane/.shared-skills/Browser/node_modules/playwright",
-    "/Users/jane/ZenDrop/node_modules/playwright",
-    "/Users/jane/.nvm/versions/node/v22.14.0/lib/node_modules/@playwright/mcp/node_modules/playwright",
-  ];
-  for (const candidate of candidates) {
+  const projectRequire = createRequire(path.join(process.cwd(), "package.json"));
+  for (const resolve of [require, projectRequire]) {
     try {
-      return require(candidate);
+      return resolve("playwright");
     } catch {
-      // Try next candidate.
+      // Try the next installation location.
     }
   }
-  throw new Error("Playwright not found. Run `npm install -D playwright` in the clone project, or install the Browser skill dependencies.");
+  throw new Error("Playwright not found. Run `npm install -D playwright` in the skill directory or current project directory, then run `npx playwright install chromium`.");
 }
 
 export async function launchChromium(chromium) {
